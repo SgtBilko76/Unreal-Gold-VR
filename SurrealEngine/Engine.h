@@ -186,6 +186,7 @@ public:
 	void RunVR(float levelTimeElapsed);
 	void UpdateVRInput(float timeElapsed);
 	void RunVRMenuScreen();
+	bool IsVRMenuEditBoxFocused();
 	void RunVRScope();
 
 	// Whether the "big screen" panel should be showing right now. For UT and later this
@@ -218,6 +219,7 @@ public:
 	// (VRCamera::StageToWorldPosition) so it follows the player through any camera
 	// teleport/map change while staying still in the physical room.
 	bool vrMenuScreenPositioned = false;
+	bool vrEditBoxFocused = false; // last IsVRMenuEditBoxFocused() result, opens/closes the VR keyboard
 	vec3 vrMenuScreenPos = vec3(0.0f);
 	vec3 vrMenuScreenForward = vec3(0.0f, 0.0f, -1.0f); // horizontal unit vector, player -> screen
 

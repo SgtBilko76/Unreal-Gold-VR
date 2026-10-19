@@ -1945,6 +1945,21 @@ static constexpr float VRUnitsPerMeter = VRCamera::UnitsPerMeter;
 // above); only the final four corners are converted to UE1 world space for rendering, via the
 // same anchor/scale/body-yaw chain the eye cameras use (VRCamera::StageToWorldPosition), so
 // the quad and the camera agree on where "the room" is.
+// True while a UWindow text field has keyboard focus: WindowConsole.Root.KeyFocusWindow is a
+// UWindowEditBox (Unreal Gold's and UT's UWindow both work this way).
+bool Engine::IsVRMenuEditBoxFocused()
+{
+	if (!console || !console->HasProperty("Root"))
+		return false;
+	UObject* root = console->GetUObject("Root");
+	if (!root || !root->HasProperty("KeyFocusWindow"))
+		return false;
+	UObject* focus = root->GetUObject("KeyFocusWindow");
+	if (!focus || !focus->IsA("UWindowEditBox"))
+		return false;
+	return !focus->HasProperty("bHasKeyboardFocus") || focus->GetBool("bHasKeyboardFocus");
+}
+
 void Engine::RunVRMenuScreen()
 {
 	if (!vrInput || !vrBigScreenActive)
@@ -1952,6 +1967,7 @@ void Engine::RunVRMenuScreen()
 		render->SetMenuWorldStrips(false, nullptr, 0);
 		vrMenuScreenPositioned = false; // re-anchor fresh next time the menu opens
 		render->vrKeyboardActive = false; // close the on-screen keyboard when the menu closes
+		vrEditBoxFocused = false;
 		return;
 	}
 
@@ -2053,6 +2069,15 @@ void Engine::RunVRMenuScreen()
 
 	render->vrKeyboardCursorX = (float)cursorPos.x;
 	render->vrKeyboardCursorY = (float)cursorPos.y;
+
+	// The keyboard opens by itself when a text field (e.g. Player Name) gets keyboard focus and
+	// closes when the focus moves away from it; the left stick click still toggles it by hand.
+	bool editBoxFocused = IsVRMenuEditBoxFocused();
+	if (editBoxFocused != vrEditBoxFocused)
+	{
+		vrEditBoxFocused = editBoxFocused;
+		render->vrKeyboardActive = editBoxFocused;
+	}
 	if (vrInput->KeyboardToggleJustPressed)
 		render->vrKeyboardActive = !render->vrKeyboardActive;
 
