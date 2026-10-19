@@ -40,7 +40,7 @@ public class GameSetupActivity extends Activity
 
 	private static GameIsoInstaller createInstaller(Context context)
 	{
-		return new GameIsoInstaller(context.getString(R.string.game_iso_urls), context.getString(R.string.game_iso_size),
+		return new GameIsoInstaller(context.getString(R.string.game_iso_layout), context.getString(R.string.game_iso_urls), context.getString(R.string.game_iso_size),
 				context.getString(R.string.game_iso_sha256), context.getString(R.string.game_iso_name),
 				new File(context.getString(R.string.game_data_dir)));
 	}

@@ -43,6 +43,7 @@ android {
             // OldUnreal's servers (archive.org as fallback) - same sources, size and SHA-256 as
             // OldUnreal's own installer (github.com/OldUnreal/FullGameInstallers).
             resValue "string", "game_name", "Unreal Gold"
+            resValue "string", "game_iso_layout", "unrealgold"
             resValue "string", "game_iso_name", "UNREAL_GOLD.ISO"
             resValue "string", "game_iso_urls", "https://files.oldunreal.net/UNREAL_GOLD.ISO|https://files2.oldunreal.net/UNREAL_GOLD.ISO|https://files3.oldunreal.net/UNREAL_GOLD.ISO|https://archive.org/download/totallyunreal/UNREAL_GOLD.ISO"
             resValue "string", "game_iso_size", "676734976"
@@ -53,12 +54,13 @@ android {
             applicationIdSuffix ".ut99"
             resValue "string", "app_name", "Unreal Tournament VR"
             resValue "string", "game_data_dir", "/sdcard/SurrealEngineUT"
-            // Disc-image download not set up for UT yet (empty = sideload only).
+            // Same for UT: the GOTY CD1 image (UT 436, maps stored as .unr.uz).
             resValue "string", "game_name", "Unreal Tournament"
-            resValue "string", "game_iso_name", ""
-            resValue "string", "game_iso_urls", ""
-            resValue "string", "game_iso_size", ""
-            resValue "string", "game_iso_sha256", ""
+            resValue "string", "game_iso_layout", "utgoty"
+            resValue "string", "game_iso_name", "UT_GOTY_CD1.ISO"
+            resValue "string", "game_iso_urls", "https://files.oldunreal.net/UT_GOTY_CD1.ISO|https://files2.oldunreal.net/UT_GOTY_CD1.ISO|https://files3.oldunreal.net/UT_GOTY_CD1.ISO|https://archive.org/download/ut-goty/UT_GOTY_CD1.iso"
+            resValue "string", "game_iso_size", "649633792"
+            resValue "string", "game_iso_sha256", "e184984ca88f001c5ddd52035d76cd64e266e26c74975161b5ed72366c74704f"
         }
     }
 
