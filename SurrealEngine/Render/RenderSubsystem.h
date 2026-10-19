@@ -215,6 +215,10 @@ public:
 		// and the texture UT's TournamentWeapon.DrawMuzzleFlash draws as a 2D icon - that
 		// draw is redirected to a billboard at MuzzlePoint (RenderCanvas.cpp's DrawTile).
 		vec3 MuzzlePoint = vec3(0.0f);
+		// Barrel tip of the held weapon as last drawn, relative to the right hand (RenderCanvas.cpp
+		// DrawActor) - lets the next frame's MuzzlePoint follow the hand.
+		vec3 MuzzleLocal = vec3(0.0f);
+		UActor* MuzzleOwner = nullptr;
 		// The held weapon, when it has an MFTexture property. Read at DRAW time (DrawTile),
 		// not once per frame: UT weapons pick a new MFTexture from MuzzleFlashVariations each
 		// shot, inside RenderOverlays itself, so a value cached beforehand never matched.

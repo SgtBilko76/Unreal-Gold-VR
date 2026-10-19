@@ -21,6 +21,25 @@ class VisibleMesh
 public:
 	bool DrawMesh(VisibleFrame* frame, UActor* actor, bool wireframe, bool translucentPass);
 
+	// Optional (VR muzzle flash): track the drawn vertex that reaches furthest along TipDir from
+	// TipOrigin, in world space - i.e. the barrel tip of a held weapon in its current pose.
+	bool TrackTip = false;
+	vec3 TipOrigin = vec3(0.0f);
+	vec3 TipDir = vec3(1.0f, 0.0f, 0.0f);
+	float TipBest = -1e30f;
+	vec3 Tip = vec3(0.0f);
+	void TrackTipPoint(const vec3& p)
+	{
+		if (!TrackTip)
+			return;
+		float d = dot(p - TipOrigin, TipDir);
+		if (d > TipBest)
+		{
+			TipBest = d;
+			Tip = p;
+		}
+	}
+
 private:
 	void DrawDebugInfo(VisibleFrame* frame, UActor* actor);
 	bool DrawMeshAtLocation(VisibleFrame* frame, UActor* actor, UActor* lightLocationActor, UMesh* mesh, const mat4& meshToWorld, const mat3& meshNormalToWorld, bool translucentPass);

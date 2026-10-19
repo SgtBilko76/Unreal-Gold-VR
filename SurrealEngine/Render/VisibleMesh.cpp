@@ -202,6 +202,7 @@ bool VisibleMesh::DrawMesh(VisibleFrame* frame, UActor* actor, UActor* lightLoca
 			}
 
 			vertices[i].Point = (ObjectToWorld * vec4(vertex, 1.0f)).xyz();
+			TrackTipPoint(vertices[i].Point);
 			vertices[i].UV = { tri.UV[i].x * uscale, tri.UV[i].y * vscale };
 			normals[i] = normalize(ObjectNormalToWorld * normal);
 		}
@@ -515,6 +516,7 @@ bool VisibleMesh::DrawLodMeshFace(VisibleFrame* frame, UActor* actor, UActor* li
 			}
 
 			vertices[i].Point = (ObjectToWorld * vec4(vertex, 1.0f)).xyz();
+			TrackTipPoint(vertices[i].Point);
 			vertices[i].UV = { wedge.U * uscale, wedge.V * vscale };
 			normals[i] = normalize(ObjectNormalToWorld * normal);
 		}
@@ -748,6 +750,7 @@ bool VisibleMesh::DrawMeshDX(VisibleFrame* frame, UActor* actor, UActor* lightLo
 			}
 
 			vertices[i].Point = (ObjectToWorld * vec4(vertex, 1.0f)).xyz();
+			TrackTipPoint(vertices[i].Point);
 			vertices[i].UV = { tri.UV[i].x * uscale, tri.UV[i].y * vscale };
 			normals[i] = normalize(ObjectNormalToWorld * normal);
 		}
@@ -1013,6 +1016,7 @@ bool VisibleMesh::DrawLodMeshFaceDX(VisibleFrame* frame, UActor* actor, UActor* 
 
 
 			vertices[i].Point = (ObjectToWorld * vec4(vertex, 1.0f)).xyz();
+			TrackTipPoint(vertices[i].Point);
 			vertices[i].UV = { wedge.U * uscale, wedge.V * vscale };
 			normals[i] = normalize(ObjectNormalToWorld * normal);
 		}

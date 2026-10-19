@@ -195,6 +195,8 @@ void RenderSubsystem::DrawActor(UActor* actor, bool WireFrame, bool ClearZ)
 	// rotation weapon fire is overridden to). Restored afterwards so the script's own
 	// bookkeeping (muzzle flash positions etc.) sees what it set.
 	bool overridden = false;
+	bool trackMuzzle = false;
+	vec3 muzzleHand = vec3(0.0f), muzzleDir = vec3(1.0f, 0.0f, 0.0f);
 	vec3 savedLocation;
 	Rotator savedRotation;
 	float savedDrawScale = 1.0f;
@@ -292,13 +294,38 @@ void RenderSubsystem::DrawActor(UActor* actor, bool WireFrame, bool ClearZ)
 			vrWeaponScale = 2.0f;
 		actor->DrawScale() = savedDrawScale * vrWeaponScale;
 		overridden = true;
+
+		// The muzzle flash billboard goes on the barrel tip as drawn, instead of a fixed 30 cm ahead
+		// of the hand (the 8x minigun's flash sat beside the gun): VisibleMesh reports the drawn
+		// vertex (current animation pose, final location/rotation/scale, no helper vertices) that
+		// reaches furthest along the gun's forward axis. Kept relative to the hand so
+		// UpdateVRAimPoint() places it right in the next frame, too.
+		if (!slaveWeapon)
+		{
+			trackMuzzle = true;
+			muzzleHand = VRCamera::StageToWorldPosition(vr->RightControllerPosition, engine->CameraLocation, vr->BodyYawRadians, VRCamera::UnitsPerMeter, vr->HeadAnchorPosition);
+			muzzleDir = normalize((Coords::Rotation(actor->Rotation()).ToMatrix() * vec4(1.0f, 0.0f, 0.0f, 0.0f)).xyz());
+		}
 	}
 
 	actor->bHidden() = false;
 	VisibleMesh vismesh;
+	vismesh.TrackTip = trackMuzzle;
+	vismesh.TipOrigin = muzzleHand;
+	vismesh.TipDir = muzzleDir;
 	if (vismesh.DrawMesh(&MainFrame, actor, WireFrame, false))
 		vismesh.DrawMesh(&MainFrame, actor, WireFrame, true);
 	actor->bHidden() = true;
+
+	if (trackMuzzle && vismesh.TipBest > -1e29f)
+	{
+		static std::set<std::string> loggedMuzzles;
+		if (loggedMuzzles.insert(UObject::GetUClassName(actor).ToString()).second)
+			LogMessage("VR muzzle " + UObject::GetUClassName(actor).ToString() + ": tip " + std::to_string(vismesh.TipBest) + " units ahead of the hand");
+		VRAim.MuzzleLocal = vismesh.Tip - muzzleHand;
+		VRAim.MuzzleOwner = actor;
+		VRAim.MuzzlePoint = vismesh.Tip;
+	}
 
 	if (overridden)
 	{

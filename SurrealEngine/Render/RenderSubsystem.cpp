@@ -173,10 +173,14 @@ void RenderSubsystem::UpdateVRAimPoint()
 	VRAim.HitPoint = origin + dir * VRAim.Dist;
 	VRAim.Valid = true;
 
-	// Muzzle: ~30cm ahead of the hand along the aim; the flash texture comes from the held
-	// weapon's MFTexture (TournamentWeapon), when the game has one.
-	VRAim.MuzzlePoint = origin + dir * (0.30f * VRCamera::UnitsPerMeter);
+	// Muzzle: the held weapon's barrel tip as DrawActor last measured it (rotated with the aim,
+	// moved with the hand); ~30cm ahead of the hand until that weapon has been drawn once. The
+	// flash texture comes from the held weapon's MFTexture (TournamentWeapon), when it has one.
 	VRAim.Weapon = pawn->Weapon();
+	if (VRAim.MuzzleOwner && VRAim.MuzzleOwner == VRAim.Weapon)
+		VRAim.MuzzlePoint = origin + VRAim.MuzzleLocal;
+	else
+		VRAim.MuzzlePoint = origin + dir * (0.30f * VRCamera::UnitsPerMeter);
 	VRAim.WeaponHasMuzzleFlash = VRAim.Weapon && VRAim.Weapon->HasProperty("MFTexture");
 
 	// Which texture the HUD will draw as its crosshair this frame - UT's ChallengeHUD keeps a
