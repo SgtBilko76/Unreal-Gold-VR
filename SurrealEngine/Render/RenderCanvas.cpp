@@ -288,6 +288,8 @@ void RenderSubsystem::DrawActor(UActor* actor, bool WireFrame, bool ClearZ)
 			vrWeaponScale = 8.0f;
 		else if (actor->IsA("enforcer")) // covers doubleenforcer too; slightly oversized at 4x
 			vrWeaponScale = 2.8f;
+		else if (actor->IsA("Translocator")) // twice too big at 4x (Quest 3 testing)
+			vrWeaponScale = 2.0f;
 		actor->DrawScale() = savedDrawScale * vrWeaponScale;
 		overridden = true;
 	}
