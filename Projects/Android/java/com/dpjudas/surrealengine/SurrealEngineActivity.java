@@ -223,7 +223,26 @@ import androidx.core.content.ContextCompat;
 	{
 		new File(dir).mkdirs();
 
-		if (!hasBundledGame() || bundledGameInstalled())
+		if (!hasBundledGame())
+		{
+			// APK without game data (the public release): the engine's own pk3 still ships in
+			// it, and the game itself is either sideloaded or downloaded from OldUnreal by
+			// GameSetupActivity - a regular 2D panel, since nothing this immersive activity
+			// draws with Android views is visible on the headset before the OpenXR session.
+			installEnginePk3();
+			if (!GameIsoInstaller.gameDataPresent(new File(dir)) && GameSetupActivity.downloadAvailable(this))
+			{
+				Intent setup = new Intent(this, GameSetupActivity.class);
+				setup.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(setup);
+				finish();
+				return;
+			}
+			create();
+			return;
+		}
+
+		if (bundledGameInstalled())
 		{
 			create();
 			return;
@@ -249,6 +268,32 @@ import androidx.core.content.ContextCompat;
 			});
 		}, "GameDataInstaller");
 		installer.start();
+	}
+
+	// Copies the engine's resource archive out of the APK when it is missing or outdated.
+	private void installEnginePk3()
+	{
+		File target = new File(dir, ENGINE_PK3);
+		long assetLength = -1;
+		try (android.content.res.AssetFileDescriptor fd = getAssets().openFd(ENGINE_PK3))
+		{
+			assetLength = fd.getLength();
+		}
+		catch (IOException e)
+		{
+			// stored compressed, or not in this APK
+		}
+		if (target.exists() && target.length() == assetLength)
+			return;
+		try
+		{
+			getAssets().open(ENGINE_PK3).close();
+		}
+		catch (IOException e)
+		{
+			return; // APK built without the pk3: keep whatever the user sideloaded
+		}
+		copyAssetFile(ENGINE_PK3, target);
 	}
 
 	// Copies assets/game/** into dir/** and the engine pk3 into dir, then writes the marker.

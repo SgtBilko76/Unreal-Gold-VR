@@ -39,12 +39,26 @@ android {
             dimension "game"
             resValue "string", "app_name", "Unreal Gold VR"
             resValue "string", "game_data_dir", "/sdcard/SurrealEngine"
+            // No game data in the APK: offer to download the original disc image from
+            // OldUnreal's servers (archive.org as fallback) - same sources, size and SHA-256 as
+            // OldUnreal's own installer (github.com/OldUnreal/FullGameInstallers).
+            resValue "string", "game_name", "Unreal Gold"
+            resValue "string", "game_iso_name", "UNREAL_GOLD.ISO"
+            resValue "string", "game_iso_urls", "https://files.oldunreal.net/UNREAL_GOLD.ISO|https://files2.oldunreal.net/UNREAL_GOLD.ISO|https://files3.oldunreal.net/UNREAL_GOLD.ISO|https://archive.org/download/totallyunreal/UNREAL_GOLD.ISO"
+            resValue "string", "game_iso_size", "676734976"
+            resValue "string", "game_iso_sha256", "7e360d0cc9e5533f38859819fd3cbfea7c475ecd428f9f433b5f8e1d5742cbca"
         }
         ut99 {
             dimension "game"
             applicationIdSuffix ".ut99"
             resValue "string", "app_name", "Unreal Tournament VR"
             resValue "string", "game_data_dir", "/sdcard/SurrealEngineUT"
+            // Disc-image download not set up for UT yet (empty = sideload only).
+            resValue "string", "game_name", "Unreal Tournament"
+            resValue "string", "game_iso_name", ""
+            resValue "string", "game_iso_urls", ""
+            resValue "string", "game_iso_size", ""
+            resValue "string", "game_iso_sha256", ""
         }
     }
 
