@@ -314,11 +314,41 @@ void OpenXRDisplayWindow::CreateVulkanSession(VkInstance instance, VkPhysicalDev
 	}
 }
 
+// The present shader writes gamma-encoded (sRGB) colors, like the desktop swapchain. The OpenXR
+// compositor treats a UNORM swapchain as LINEAR and encodes it again for the display, which
+// lifts all dark tones (the game looked too bright, with flat lighting and no visible shadows on
+// the Quest 3). So the swapchain is created as _SRGB - telling the compositor the bytes are
+// sRGB - with the mutable-format bit, and the engine keeps rendering through UNORM image views
+// (FramebufferManager: PresentVR.Format), so the bytes are stored as written, not re-encoded.
+// Falls back to plain UNORM if the runtime offers no R8G8B8A8_SRGB swapchains.
+void OpenXRDisplayWindow::SetSwapchainFormat(XrSwapchainCreateInfo& createInfo)
+{
+	createInfo.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT | XR_SWAPCHAIN_USAGE_SAMPLED_BIT;
+	createInfo.format = VK_FORMAT_R8G8B8A8_UNORM;
+
+	uint32_t count = 0;
+	if (fn.xrEnumerateSwapchainFormats && XR_SUCCEEDED(fn.xrEnumerateSwapchainFormats(Session, 0, &count, nullptr)) && count > 0)
+	{
+		std::vector<int64_t> formats(count);
+		if (XR_SUCCEEDED(fn.xrEnumerateSwapchainFormats(Session, count, &count, formats.data())))
+		{
+			for (uint32_t i = 0; i < count; i++)
+			{
+				if (formats[i] == VK_FORMAT_R8G8B8A8_SRGB)
+				{
+					createInfo.format = VK_FORMAT_R8G8B8A8_SRGB;
+					createInfo.usageFlags |= XR_SWAPCHAIN_USAGE_MUTABLE_FORMAT_BIT;
+					break;
+				}
+			}
+		}
+	}
+}
+
 void OpenXRDisplayWindow::CreateSwapchain(int eye)
 {
 	XrSwapchainCreateInfo createInfo = { XR_TYPE_SWAPCHAIN_CREATE_INFO };
-	createInfo.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT | XR_SWAPCHAIN_USAGE_SAMPLED_BIT;
-	createInfo.format = VK_FORMAT_R8G8B8A8_UNORM; // NOT _SRGB: the present shader already outputs gamma-encoded colors; an sRGB image would re-encode them on write (washed-out colors on the Quest 3)
+	SetSwapchainFormat(createInfo);
 	createInfo.sampleCount = 1;
 	createInfo.width = ViewConfigs[eye].recommendedImageRectWidth;
 	createInfo.height = ViewConfigs[eye].recommendedImageRectHeight;
@@ -360,8 +390,7 @@ void OpenXRDisplayWindow::CreateScreenLayerSwapchain(int width, int height)
 	ScreenHeight = height;
 
 	XrSwapchainCreateInfo createInfo = { XR_TYPE_SWAPCHAIN_CREATE_INFO };
-	createInfo.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT | XR_SWAPCHAIN_USAGE_SAMPLED_BIT;
-	createInfo.format = VK_FORMAT_R8G8B8A8_UNORM; // NOT _SRGB: the present shader already outputs gamma-encoded colors; an sRGB image would re-encode them on write (washed-out colors on the Quest 3) // must match GetOrCreateScreenFramebuffer's format (FramebufferManager.cpp)
+	SetSwapchainFormat(createInfo);
 	createInfo.sampleCount = 1;
 	createInfo.width = (uint32_t)width;
 	createInfo.height = (uint32_t)height;

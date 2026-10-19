@@ -1412,7 +1412,7 @@ void VulkanRenderDevice::ComputeBlurSamples(int sampleCount, float blurAmount, f
 	}
 }
 
-PresentPushConstants VulkanRenderDevice::GetPresentPushConstants()
+PresentPushConstants VulkanRenderDevice::GetPresentPushConstants(float gammaBoost)
 {
 	PresentPushConstants pushconstants;
 	pushconstants.HdrScale = 0.8f + HdrScale * (3.0f / 255.0f);
@@ -1425,7 +1425,7 @@ PresentPushConstants VulkanRenderDevice::GetPresentPushConstants()
 	}
 	else
 	{
-		float brightness = clamp(Brightness * 2.0f, 0.05f, 2.99f);
+		float brightness = clamp(Brightness * 2.0f * gammaBoost, 0.05f, 2.99f);
 
 		if (GammaMode == 0)
 		{
@@ -1506,7 +1506,7 @@ void VulkanRenderDevice::DrawPresentTextureVR(int eye, int imageIndex, VkImage e
 {
 	RenderPasses->CreatePresentVRRenderPass(VK_FORMAT_R8G8B8A8_UNORM); // must match OpenXRDisplayWindow::CreateSwapchain's format
 
-	PresentPushConstants pushconstants = GetPresentPushConstants();
+	PresentPushConstants pushconstants = GetPresentPushConstants(VRGammaBoost);
 
 	int presentShader = 0;
 	if (GammaMode == 1) presentShader |= 2;
@@ -1585,7 +1585,7 @@ void VulkanRenderDevice::DrawPresentTextureScreen(int imageIndex, VkImage screen
 	// (OpenXRDisplayWindow::CreateScreenLayerSwapchain), so no separate render pass is needed.
 	RenderPasses->CreatePresentVRRenderPass(VK_FORMAT_R8G8B8A8_UNORM);
 
-	PresentPushConstants pushconstants = GetPresentPushConstants();
+	PresentPushConstants pushconstants = GetPresentPushConstants(VRGammaBoost);
 
 	int presentShader = 0;
 	if (GammaMode == 1) presentShader |= 2;

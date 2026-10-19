@@ -50,6 +50,7 @@ struct OpenXRFunctions
 	PFN_xrLocateSpace xrLocateSpace = nullptr;
 	PFN_xrLocateViews xrLocateViews = nullptr;
 	PFN_xrCreateSwapchain xrCreateSwapchain = nullptr;
+	PFN_xrEnumerateSwapchainFormats xrEnumerateSwapchainFormats = nullptr;
 	PFN_xrDestroySwapchain xrDestroySwapchain = nullptr;
 	PFN_xrEnumerateSwapchainImages xrEnumerateSwapchainImages = nullptr;
 	PFN_xrAcquireSwapchainImage xrAcquireSwapchainImage = nullptr;

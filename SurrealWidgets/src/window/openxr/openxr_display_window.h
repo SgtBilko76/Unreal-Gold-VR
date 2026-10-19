@@ -127,6 +127,7 @@ private:
 	void CreateInstanceAndSystem();
 	void EnumerateViews();
 	void CreateSwapchain(int eye);
+	void SetSwapchainFormat(XrSwapchainCreateInfo& createInfo);
 	void DestroySwapchains();
 	void CreateActions();
 	void SyncActions();

@@ -67,7 +67,12 @@ public:
 	static void ComputeBlurSamples(int sampleCount, float blurAmount, float* sampleWeights);
 
 	void DrawPresentTexture(int width, int height);
-	PresentPushConstants GetPresentPushConstants();
+	// gammaBoost scales the Brightness gamma; the VR eye/screen layers pass VRGammaBoost.
+	PresentPushConstants GetPresentPushConstants(float gammaBoost = 1.0f);
+	// Slight gamma lift for the headset only: with the sRGB-tagged swapchains (correct lighting,
+	// see OpenXRDisplayWindow::SetSwapchainFormat) the default brightness read a little too dark on
+	// the Quest 3's displays; 1.15 lifts mid-tones ~9% and shadows a bit more, keeping their shape.
+	static constexpr float VRGammaBoost = 1.15f;
 
 	// VR path: called by Engine's per-eye render loop (see SurrealEngine/VR/VRRenderLoop.cpp)
 	// once per eye per frame, in place of Unlock(true). Runs the same

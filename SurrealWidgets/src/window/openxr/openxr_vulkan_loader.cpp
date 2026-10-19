@@ -87,6 +87,7 @@ void OpenXRFunctions::LoadInstanceFunctions(XrInstance instance)
 	LOAD(xrLocateSpace);
 	LOAD(xrLocateViews);
 	LOAD(xrCreateSwapchain);
+	LOAD(xrEnumerateSwapchainFormats);
 	LOAD(xrDestroySwapchain);
 	LOAD(xrEnumerateSwapchainImages);
 	LOAD(xrAcquireSwapchainImage);
