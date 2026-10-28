@@ -1,5 +1,7 @@
 # Unreal Gold VR — a Meta Quest & PICO port of Unreal Gold
 
+**Download, install guide, controls and pictures: [portroyale.online/unreal-gold.html](https://portroyale.online/unreal-gold.html)**
+
 [![Sponsor](https://img.shields.io/badge/Sponsor-SgtBilko76-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/SgtBilko76)
 
 
