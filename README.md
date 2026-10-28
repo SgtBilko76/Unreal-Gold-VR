@@ -63,6 +63,8 @@ releases, linked from that page).
 
 ## Controls
 
+![Unreal Gold VR controller mapping](docs/controls.webp)
+
 | Input | Action |
 | --- | --- |
 | Left stick | Move (direction follows snap-turns) |
